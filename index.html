@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <title>Tasks</title>
 
     <style>
@@ -32,12 +33,19 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 999;
       }
       
       .app header h1{
         text-transform: capitalize;
         font-size: 30px;
         color: #34495e;
+        margin-right: 20px;
+      }
+
+      .app header i{
+        font-size: 25px;
+        color: #2ecc71;
       }
 
       #list{
@@ -50,9 +58,10 @@
         width: 100%;
         max-width: 800px;
         display: grid;
-        grid-template-columns: 1fr 15fr 2fr;
+        grid-template-columns: 1fr 15fr 0.5fr;
         align-items: center;
-        height: 30px;
+        height: fit-content;
+        padding: 10px 5px;
         border-bottom: 1px solid #f39c12;
         margin-bottom: 10px;
         color: #34495e;
@@ -61,20 +70,15 @@
         text-transform: capitalize;
       }
 
-      #list .new-task button{
-        border: none;
-        height: 80%;
-        border-radius: 5px;
-        color: #fff;
-        font-weight: bold;
-        font-size: 16px;
+      #list .new-task .del{
+        color: #e74c3c;
+        font-size: 20px;
         transition: all 0.3s;
         cursor: pointer;
-        background-color: #e74c3c;
       }
 
-      #list .new-task button:hover{
-        background-color: #c0392b;
+      #list .new-task .del:hover{
+        color: #c0392b;
       }
 
       .bottom {
@@ -119,7 +123,7 @@
         left: 0;
         height: 100vh;
         width: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0, 0, 0, 0.5);
         /* display: flex; */
         display: none;
         justify-content: center;
@@ -192,6 +196,7 @@
     <div class="app">
       <header>
         <h1>Tasks App</h1>
+        <i class="fas fa-check"></i>
       </header>   
       <div id="list"></div>
 
@@ -202,7 +207,9 @@
 
       <div class="add-form">
         <form onsubmit="return add(event)">
-          <div id="close">X</div>
+          <div id="close">
+            <i class="fas fa-times"></i>
+          </div>
           <label for="task">Adicinar Nova Tarefa</label>
           <input type="text" placeholder="tasks here" id="task" name="taskValue" />
           <button type="submit">ADD</button>
@@ -238,11 +245,11 @@
           label.textContent = task;
           div.appendChild(label);
 
-          let btn = document.createElement('button');
-          btn.setAttribute('type', 'button');
-          btn.textContent = 'Deletar';
-          btn.addEventListener('click', () => del(taskList.indexOf(task)));
-          div.appendChild(btn);
+          let close = document.createElement('div');
+          close.innerHTML= '<i class="fas fa-window-close"></i>';
+          close.setAttribute('class', 'del');
+          close.addEventListener('click', () => del(taskList.indexOf(task)));
+          div.appendChild(close);
         });
       }
 
