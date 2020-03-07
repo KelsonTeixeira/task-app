@@ -60,6 +60,7 @@
         max-width: 800px;
         display: grid;
         grid-template-columns: 1fr 15fr 0.5fr;
+        column-gap: 10px;
         align-items: center;
         height: fit-content;
         padding: 10px 5px;
@@ -189,6 +190,21 @@
 
       .add-form form button:hover {
         background-color: #27ae60;
+      }
+
+      @media only screen and (max-width: 414px){
+        .bottom {
+          position: absolute;  
+          bottom: 30px;
+          padding: 0 10px;
+          right: unset;
+          left: 0;
+          width: 100%;
+        }
+        .app{
+          min-height: 90vh;
+          padding-bottom: 50px;
+        }
       }
     </style>
   </head>
