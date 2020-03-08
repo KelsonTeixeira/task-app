@@ -290,11 +290,10 @@
       }
 
       const del = async (id) => {
-        console.log(id);
-        await taskList.splice(id, id + 1);
-        await localStorage.setItem('taskList', taskList);
-        await takeList();
-        await setList();
+        taskList.splice(id, 1);
+        localStorage.setItem('taskList', taskList);
+        takeList();
+        setList();
       }
 
       document.querySelector('#add').addEventListener('click', () => {
