@@ -31,12 +31,13 @@ const insertElement = (task, taskValue, taskState) => {
 
   let checkbox = document.createElement('input');
   checkbox.setAttribute('type', 'checkbox');
-  if(taskState) checkbox.setAttribute('checked', taskState);
+  if (taskState ) checkbox.setAttribute('checked', taskState);
   checkbox.addEventListener('change', () => updateState(checkbox));
   div.appendChild(checkbox);
 
   let label = document.createElement('label');
   label.textContent = taskValue;
+  if (taskState ) label.classList.add("cross");
   div.appendChild(label);
 
   let close = document.createElement('div');

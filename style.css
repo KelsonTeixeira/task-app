@@ -66,6 +66,10 @@ html {
   text-transform: capitalize;
 }
 
+.cross {
+  text-decoration: line-through;
+}
+
 #list .new-task .del {
   color: #e74c3c;
   font-size: 20px;
