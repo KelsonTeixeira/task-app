@@ -9,8 +9,11 @@ const updateTaskList = () => {
 }
 
 const updateState = (checkbox) => {
+  console.log(checkbox.parentElement);
   let id = checkbox.parentElement.getAttribute('id');
   let newState = checkbox.checked;
+  console.log(newState);
+  console.log(id)
   let taskObj = taskList[id].split(':');
 
   taskObj[1] = newState ? 1 : 0;
@@ -20,33 +23,50 @@ const updateState = (checkbox) => {
   setList();
 }
 
+const insertElement = (task, taskValue, taskState) => {
+  let div = document.createElement('div');
+  div.setAttribute('class', 'new-task');
+  div.setAttribute('id', taskList.indexOf(task));
+  List.appendChild(div);
+
+  let checkbox = document.createElement('input');
+  checkbox.setAttribute('type', 'checkbox');
+  if(taskState) checkbox.setAttribute('checked', taskState);
+  checkbox.addEventListener('change', () => updateState(checkbox));
+  div.appendChild(checkbox);
+
+  let label = document.createElement('label');
+  label.textContent = taskValue;
+  div.appendChild(label);
+
+  let close = document.createElement('div');
+  close.innerHTML = '<i class="fas fa-window-close"></i>';
+  close.setAttribute('class', 'del');
+  close.addEventListener('click', () => del(taskList.indexOf(task)));
+  div.appendChild(close);
+}
+
 const setList = () => {
   List.innerHTML = '';
+  console.log('here')
   taskList.map(task => {
     let taskObj = task.split(':');
     let taskValue = taskObj[0];
     let taskState = parseInt(taskObj[1]);
 
-    let div = document.createElement('div');
-    div.setAttribute('class', 'new-task');
-    div.setAttribute('id', taskList.indexOf(task));
-    List.appendChild(div);
+    if(!taskState) {
+      insertElement(task, taskValue, taskState);
+    }
+  });
 
-    let checkbox = document.createElement('input');
-    checkbox.setAttribute('type', 'checkbox');
-    if(taskState) checkbox.setAttribute('checked', taskState);
-    checkbox.addEventListener('change', () => updateState(checkbox));
-    div.appendChild(checkbox);
+  taskList.map(task => {
+    let taskObj = task.split(':');
+    let taskValue = taskObj[0];
+    let taskState = parseInt(taskObj[1]);
 
-    let label = document.createElement('label');
-    label.textContent = taskValue;
-    div.appendChild(label);
-
-    let close = document.createElement('div');
-    close.innerHTML = '<i class="fas fa-window-close"></i>';
-    close.setAttribute('class', 'del');
-    close.addEventListener('click', () => del(taskList.indexOf(task)));
-    div.appendChild(close);
+    if(taskState) {
+      insertElement(task, taskValue, taskState);
+    }
   });
 }
 
