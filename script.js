@@ -1,122 +1,141 @@
-var taskValue = '';
-var taskList = [];
-const List = document.querySelector('#list');
+const taskApp = {
+  taskValue: '',
+  taskList: [],
+  listContainer: document.querySelector('#list'),
+  taskInput: document.querySelector('#task'),
+  addFormContainer: document.querySelector('.add-form'),
+  addForm: document.querySelector('.add-form form'),
+  clearBtn: document.querySelector('#clear'),
+  closeBtn: document.querySelector('#close'),
+  addBtn: document.querySelector('#add'),
 
-const updateTaskList = () => {  
-  let taskListString = localStorage.getItem('taskList');
+  updateListContainer: () => {
+    taskApp.listContainer.innerHTML = '';
+    taskApp.taskList.map(task => {
+      const taskObj = task.split(':');
+      const taskValue = taskObj[0];
+      const taskState = parseInt(taskObj[1]);
 
-  if (taskListString) taskList = taskListString.split(',');
-}
+      if (!taskState) {
+        const div = taskApp.createTaskDiv(task, taskApp.listContainer);
+        taskApp.createTaskCheckbox(div, taskState);
+        taskApp.createTaskLabel(div, taskValue, taskState);
+        taskApp.createTaskCloseBtn(div, task);
+      }
+    });
 
-const updateState = (checkbox) => {
-  console.log(checkbox.parentElement);
-  let id = checkbox.parentElement.getAttribute('id');
-  let newState = checkbox.checked;
-  console.log(newState);
-  console.log(id)
-  let taskObj = taskList[id].split(':');
+    taskApp.taskList.map(task => {
+      const taskObj = task.split(':');
+      const taskValue = taskObj[0];
+      const taskState = parseInt(taskObj[1]);
 
-  taskObj[1] = newState ? 1 : 0;
-  taskList[id] = `${taskObj[0]}:${taskObj[1]}`;
-  localStorage.setItem('taskList', taskList);
-  updateTaskList();
-  setList();
-}
+      if (taskState) {
+        const div = taskApp.createTaskDiv(task, taskApp.listContainer);
+        taskApp.createTaskCheckbox(div, taskState);
+        taskApp.createTaskLabel(div, taskValue, taskState);
+        taskApp.createTaskCloseBtn(div, task);
+      }
+    });
+  },
 
-const insertElement = (task, taskValue, taskState) => {
-  let div = document.createElement('div');
-  div.setAttribute('class', 'new-task');
-  div.setAttribute('id', taskList.indexOf(task));
-  List.appendChild(div);
-
-  let checkbox = document.createElement('input');
-  checkbox.setAttribute('type', 'checkbox');
-  if (taskState ) checkbox.setAttribute('checked', taskState);
-  checkbox.addEventListener('change', () => updateState(checkbox));
-  div.appendChild(checkbox);
-
-  let label = document.createElement('label');
-  label.textContent = taskValue;
-  if (taskState ) label.classList.add("cross");
-  div.appendChild(label);
-
-  let close = document.createElement('div');
-  close.innerHTML = '<i class="fas fa-window-close"></i>';
-  close.setAttribute('class', 'del');
-  close.addEventListener('click', () => del(taskList.indexOf(task)));
-  div.appendChild(close);
-}
-
-const setList = () => {
-  List.innerHTML = '';
-  console.log('here')
-  taskList.map(task => {
-    let taskObj = task.split(':');
-    let taskValue = taskObj[0];
-    let taskState = parseInt(taskObj[1]);
-
-    if(!taskState) {
-      insertElement(task, taskValue, taskState);
+  initTaskList: () => {
+    const taskListString = localStorage.getItem('taskList');
+    if (taskListString) {
+      taskApp.taskList = taskListString.split(',');
     }
-  });
+  },
 
-  taskList.map(task => {
-    let taskObj = task.split(':');
-    let taskValue = taskObj[0];
-    let taskState = parseInt(taskObj[1]);
-
-    if(taskState) {
-      insertElement(task, taskValue, taskState);
+  displayForm: (display) => {
+    if (display) {
+      taskApp.addFormContainer.style.display = "flex";
+      taskApp.taskInput.focus();
+    } else {
+      taskApp.addFormContainer.style.display = "none";
     }
-  });
-}
+  },
 
-const add = (e) => {
-  e.preventDefault();
-  let taskInput = document.querySelector('#task');
-  taskList.push(`${task.value}:0`);
-  localStorage.setItem('taskList', taskList);
-  taskInput.value = '';
-  setList();
-}
+  clear: () => {
+    let deleteTasks = window.confirm('Deseja excluir todas as tarefas?');
+    if (deleteTasks) {
+      taskApp.taskList = [];
+      taskApp.updateStorage();
+      taskApp.updateListContainer();
+    }
+  },
 
-const clear = () => {
-  let deleteTasks = window.confirm('Deseja excluir todas as tarefas?');
-  if (deleteTasks) {
-    taskList = [];
-    localStorage.setItem('taskList', '');
-    return true;
+  updateStorage: () => {
+    localStorage.setItem('taskList', taskApp.taskList);
+  },
+
+  updateTaskState: (element) => {
+    const id = element.parentElement.getAttribute('id');
+    const newState = element.checked;
+    const taskObj = taskApp.taskList[id].split(':');
+
+    taskObj[1] = newState ? 1 : 0;
+    taskApp.taskList[id] = `${taskObj[0]}:${taskObj[1]}`;
+    taskApp.updateStorage();
+    taskApp.updateListContainer();
+  },
+
+  initEventListeners: () => {
+    taskApp.addBtn.addEventListener('click', () => taskApp.displayForm(true));
+    taskApp.closeBtn.addEventListener('click', () => taskApp.displayForm(false));
+    taskApp.clearBtn.addEventListener('click', () => taskApp.clear());
+    taskApp.addForm.addEventListener('submit', (event) => taskApp.addTask(event));
+    addEventListener('keydown', e => { if (e.code === 'Escape') taskApp.displayForm(false) });
+  },
+
+  deleteTask: (id) => {
+    taskApp.taskList.splice(id, 1);
+    taskApp.updateStorage();
+    taskApp.updateListContainer();
+  },
+
+  addTask: (event) => {
+    event.preventDefault();
+    taskApp.taskList.push(`${taskApp.taskInput.value}:0`);
+    taskApp.updateStorage();
+    taskApp.updateListContainer();
+    taskApp.taskInput.value = '';
+  },
+
+  createTaskDiv: (task, constainer) => {
+    let div = document.createElement('div');
+    div.setAttribute('class', 'new-task');
+    div.setAttribute('id', taskApp.taskList.indexOf(task));
+    constainer.appendChild(div);
+    return div;
+  },
+
+  createTaskCheckbox: (div, taskState) => {
+    let checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    if (taskState) checkbox.setAttribute('checked', taskState);
+    checkbox.addEventListener('change', () => taskApp.updateTaskState(checkbox));
+    div.appendChild(checkbox);
+  },
+
+  createTaskLabel: (div, taskValue, taskState) => {
+    let label = document.createElement('label');
+    label.textContent = taskValue;
+    if (taskState) label.classList.add("cross");
+    div.appendChild(label);
+  },
+
+  createTaskCloseBtn: (div, task) => {
+    let close = document.createElement('div');
+    close.innerHTML = '<i class="fas fa-window-close"></i>';
+    close.setAttribute('class', 'del');
+    close.addEventListener('click', () => taskApp.deleteTask(taskApp.taskList.indexOf(task)));
+    div.appendChild(close);
+  },
+
+  init: () => {
+    taskApp.initEventListeners();
+    taskApp.initTaskList();
+    taskApp.updateListContainer()
   }
-  return false;
-}
+};
 
-const del = async (id) => {
-  taskList.splice(id, 1);
-  localStorage.setItem('taskList', taskList);
-  updateTaskList();
-  setList();
-}
-
-document.querySelector('#add').addEventListener('click', () => {
-  document.querySelector('.add-form').style.display = "flex";
-  let taskInput = document.querySelector('#task');
-  taskInput.focus();
-});
-
-document.querySelector('#close').addEventListener('click', () => {
-  document.querySelector('.add-form').style.display = "none";
-});
-
-addEventListener('keydown', e => {
-  if (e.code === 'Escape') {
-    document.querySelector('.add-form').style.display = "none";
-  }
-});
-
-document.querySelector('#clear').addEventListener('click', () => {
-  clear();
-  setList();
-});
-
-updateTaskList();
-setList();
+taskApp.init();
