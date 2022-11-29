@@ -53,7 +53,7 @@ html {
   width: 100%;
   max-width: 800px;
   display: grid;
-  grid-template-columns: 1fr 15fr 0.5fr;
+  grid-template-columns: 1fr 15fr 0.5fr 0.5fr;
   column-gap: 10px;
   align-items: center;
   height: fit-content;
@@ -78,6 +78,18 @@ html {
 
 #list .new-task .del:hover {
   color: #c0392b;
+}
+
+#list .new-task .edit {
+  color: rgba(52, 73, 94, 0.8);
+  font-size: 16px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+#list .new-task .edit:hover {
+  color: rgba(52, 73, 94);
+  font-size: 18px;
 }
 
 .bottom {

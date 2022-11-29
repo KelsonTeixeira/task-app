@@ -20,6 +20,7 @@ const taskApp = {
         const div = taskApp.createTaskDiv(task, taskApp.listContainer);
         taskApp.createTaskCheckbox(div, taskState);
         taskApp.createTaskLabel(div, taskValue, taskState);
+        taskApp.createEditBtn(div, task);
         taskApp.createTaskCloseBtn(div, task);
       }
     });
@@ -33,6 +34,7 @@ const taskApp = {
         const div = taskApp.createTaskDiv(task, taskApp.listContainer);
         taskApp.createTaskCheckbox(div, taskState);
         taskApp.createTaskLabel(div, taskValue, taskState);
+        taskApp.createEditBtn(div, task);
         taskApp.createTaskCloseBtn(div, task);
       }
     });
@@ -76,6 +78,35 @@ const taskApp = {
     taskApp.taskList[id] = `${taskObj[0]}:${taskObj[1]}`;
     taskApp.updateStorage();
     taskApp.updateListContainer();
+  },
+
+  updateTaskValue: (id, value) => {
+    const taskObj = taskApp.taskList[id].split(':');
+    taskApp.taskList[id] = `${value}:${taskObj[1]}`;
+    taskApp.updateStorage();
+    taskApp.updateListContainer();
+  },
+  
+  turnLabelEditable: (id) => {
+    const label = document.querySelector(`[id="${id}"] label`);
+    label.setAttribute('contenteditable', 'true');
+    label.focus();
+
+    label.addEventListener('focusout', _e => {
+      label.setAttribute('contenteditable', 'false');
+      taskApp.updateListContainer();
+    });
+
+    label.addEventListener('keydown', e => {
+      if(e.key === 'Escape'){
+        label.setAttribute('contenteditable', 'false');
+        taskApp.updateListContainer();
+      }
+      if(e.key === 'Enter') {
+        e.preventDefault();
+        taskApp.updateTaskValue(id, label.textContent);
+      }
+    });
   },
 
   initEventListeners: () => {
@@ -123,8 +154,16 @@ const taskApp = {
     div.appendChild(label);
   },
 
+  createEditBtn: (div, task) => {
+    const edit = document.createElement('div');
+    edit.innerHTML = '<i class="fas fa-edit"></i>';
+    edit.setAttribute('class', 'edit');
+    edit.addEventListener('click', () => taskApp.turnLabelEditable(taskApp.taskList.indexOf(task)));
+    div.appendChild(edit);
+  },
+
   createTaskCloseBtn: (div, task) => {
-    let close = document.createElement('div');
+    const close = document.createElement('div');
     close.innerHTML = '<i class="fas fa-window-close"></i>';
     close.setAttribute('class', 'del');
     close.addEventListener('click', () => taskApp.deleteTask(taskApp.taskList.indexOf(task)));
